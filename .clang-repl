@@ -1,0 +1,7 @@
+[defaults]
+repl = "clang-repl"
+args = ["-std=c++23", "-ferror-limit=3", "-O1"]
+includes = ["vector", "iostream"]
+libs = ["libomp.so"]
+timeout = 10
+debug = false
