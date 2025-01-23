@@ -1,16 +1,12 @@
 import os
 import sys
-from hatchling.builders.hooks.plugin.interface import BuildHookInterface
-
 import json
-import os
-import sys
-
-from jupyter_client.kernelspec import KernelSpecManager
 from tempfile import TemporaryDirectory
+from hatchling.builders.hooks.plugin.interface import BuildHookInterface
+from jupyter_client.kernelspec import KernelSpecManager
 
 kernel_json = {
-    "argv": [sys.executable, "-m", "clang_repl_kernel", "-f", "{connection_file}"],
+    "argv": ["python", "-m", "clang_repl", "-f", "{connection_file}"],
     "display_name": "clang_repl",
     "language": "c++",
 }

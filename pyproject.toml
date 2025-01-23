@@ -1,9 +1,9 @@
 [build-system]
-requires = ["hatchling>=1.10.0", "ipykernel"]
+requires = ["hatchling>=1.10.0", "jupyter_client", ]
 build-backend = "hatchling.build"
 
 [project]
-name = "clang_repl_kernel"
+name = "clang_repl"
 dynamic = ["version"]
 description = "IPython kernel forwarding C++ cells to clang-repl"
 readme = "README.md"
@@ -11,22 +11,19 @@ license = { text = "no license" }
 authors = [ { name = "Paul Manstetten", email = "paul.manstetten@tuwien.ac.at" }, ]
 
 requires-python = ">=3.8"
-dependencies = [ "ipykernel", "jupyter_client", "pexpect",]
+dependencies = [ "ipykernel", "pexpect", "notebook", "jupyter-console",]
 
 [project.urls]
-Homepage = "https://gitlab.tuwien.ac.at/paul.manstetten/clang_repl_kernel"
+Homepage = "https://gitlab.tuwien.ac.at/paul.manstetten/clang_repl"
 
 [tool.hatch.version]
-path = "clang_repl_kernel/__init__.py"
+path = "clang_repl/__init__.py"
 
 # Used to call hatch_build.py
 [tool.hatch.build.hooks.custom]
 
-
 [tool.hatch.build.targets.sdist]
-include = [
-    "/clang_repl_kernel",
-]
+include = [ "/clang_repl", ]
 
 [tool.hatch.build.targets.wheel.shared-data]
 "data_kernelspec/share" = "share"

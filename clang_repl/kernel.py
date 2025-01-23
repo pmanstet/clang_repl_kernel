@@ -1,6 +1,6 @@
 from ipykernel.kernelbase import Kernel
 
-from .clrepl import ClangREPL, __version__
+from .clrepl import ClangRepl, __version__
 
 
 class ClangReplKernel(Kernel):
@@ -13,11 +13,11 @@ class ClangReplKernel(Kernel):
         'mimetype': 'text/x-c++src',
         'name': 'c++'
     }
-    banner = "ClangReplKernel"
+    banner = "ClangRepl"
 
     def __init__(self, **kwargs):
         Kernel.__init__(self, **kwargs)
-        self.repl = ClangREPL()
+        self.repl = ClangRepl()
 
     def do_execute(self, code, silent, store_history=True, user_expressions=None,
                    allow_stdin=False):

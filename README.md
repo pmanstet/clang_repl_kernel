@@ -21,21 +21,63 @@
 
 ## Installation
 ```shell
-git clone https://gitlab.tuwien.ac.at/paul.manstetten/clang_repl_kernel.git
-cd clang_repl_kernel
+git clone https://gitlab.tuwien.ac.at/paul.manstetten/clang_repl.git
+cd clang_repl
 python -m venv .venv
 source .venv/bin/activate
-pip install jupyter-console
-# pip install ipykernel notebook nbclassic jupyter_server_ydoc jupyter-console
-# python -m ipykernel install --user --name=.venv # unsure if needed
 python -m pip install -e . # editable install
 jupyter kernelspec list # should now also list "clang_repl   .venv/share/jupyter/kernels/clang_repl"
 jupyter notebook --kernel clang_repl demo.ipynb
 jupyter console --kernel clang_repl
 ```
 
+## pypi publishing
+
+```shell
+# test release
+git clone https://gitlab.tuwien.ac.at/paul.manstetten/clang_repl_kernel.git
+cd clang_repl_kernel
+rm -rf .venv .testenv dist data_kernelspec
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade build twine
+# note: bump version number (overriding is not supported on upload to pypi)
+python -m build
+# note: next step needs api token
+python -m twine upload --repository testpypi --skip-existing dist/* 
+deactivate
+```
+
+```shell
+# test install of test release (no deps)
+rm -rf .venv .testenv dist data_kernelspec
+python -m venv .testenv
+source .testenv/bin/activate 
+python -m pip install --extra-index-url https://pypi.org/simple --index-url https://test.pypi.org/simple clang-repl
+jupyter kernelspec list # should list clang_repl
+jupyter console --kernel clang_repl # check if works (type: %status)
+deactivate
+```
+
+```shell
+# publish release
+git clone https://gitlab.tuwien.ac.at/paul.manstetten/clang_repl_kernel.git
+cd clang_repl_kernel
+rm -rf .venv .testenv dist data_kernelspec
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade build twine
+# note: bump version number (overriding is not supported on upload to pypi)
+python -m build
+# note: next step needs api token
+python -m twine upload --repository pypi --skip-existing dist/* 
+deactivate
+```
+
+
 ### Related links:
 
 - https://hex.tech/blog/jupyter-kernel-overview/
 - https://jupyter-client.readthedocs.io/en/stable/wrapperkernels.html
 - https://github.com/llvm/llvm-project/commits?author=vgvassilev (`clang-repl` related development)
+

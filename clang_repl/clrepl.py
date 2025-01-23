@@ -8,7 +8,7 @@ from pathlib import Path
 
 __version__ = '1.0'
 
-class ClangREPL:
+class ClangRepl:
     """ Wrapper for clang-repl """
 
     def __init__(self):
