@@ -14,7 +14,7 @@ requires-python = ">=3.8"
 dependencies = [ "ipykernel", "pexpect", "notebook", "jupyter-console",]
 
 [project.urls]
-Homepage = "https://gitlab.tuwien.ac.at/paul.manstetten/clang_repl"
+Homepage = "https://github.com/pmanstet/clang_repl_kernel.git"
 
 [tool.hatch.version]
 path = "clang_repl/__init__.py"

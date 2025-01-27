@@ -1,15 +1,35 @@
 # *clang-repl* based kernel for Jupyter notebooks
 
+## Overview
+
 - This is a kernel enabling using C++ in a [*Jupyter Notebook*](https://jupyter-notebook.readthedocs.io)
 - It bases on a minimalistic instrumentation of the interactive [*clang-repl*](https://clang.llvm.org/docs/ClangRepl.html) prompt using
 	- this [showcase](https://github.com/jupyter/echo_kernel/) for [`ipykernel.kernelbase.kernel`](https://github.com/ipython/ipykernel/blob/main/ipykernel/kernelbase.py) as blueprint for the overall project structure, and
 	- [`python-pexpect`](https://pexpect.readthedocs.io/) for instrumenting the `clang-repl>` prompt.
 
-## Usage/details
+## Motivation
+
+- The motivation is to enable notebook-based learning material for C++.
+- The focus is not on language interoperability between C++ and Python.
+- Exploring the latest capabilities of `clang-repl` using different C++ language standards/settings in a convenient way.
+- Existing projects providing a form of interactive C++ in notebooks do currently not support C++20/C++23 and use fixed/patched LLVM versions.
+
+## Details
 
 - It is required that `clang-repl` is installed on the (backend) system
-- On launch, the kernel starts an interactive `clang-repl` session. The default settings and initial includes/libs can be configured by placing a `.clang-repl` file in the users home directory ([example](.clang-repl)).
+- On launch, the kernel starts an interactive `clang-repl` session. 
+- The default settings and initial includes/libs can be configured by placing a `.clang-repl` file in the users home directory, the defaults (if not `.clang-repl` file is present) are listed below
+	```shell
+	[defaults]
+	repl = "clang-repl"
+	args = ["-std=c++20", "-ferror-limit=3", "-O1"]
+	includes = ["vector", "iostream"]
+	libs = []
+	timeout = 10
+	debug = false
+	```
 - The kernel performs the following steps for each source cell
+	0. Check if the `clang-repl` session is alive
 	1. Inspect first line of the cell if starting with these *magic commands*
 		- `%status`: print kernel status
 		- `%lib`: forward first line of cell directly to `clang-repl`	
@@ -20,64 +40,32 @@
 	6. If the cell additionally contained a `%undo` in the first line (and the incremental compile + execute was successful) the cell is "undone" via sending a subsequent `%undo` directly to `clang-repl`
 
 ## Installation
+
 ```shell
-git clone https://gitlab.tuwien.ac.at/paul.manstetten/clang_repl.git
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install clang-repl 
+
+# demo notebook
+jupyter notebook demo.ipynb
+
+# new empty notebook
+echo '{ "cells": [], "nbformat": 4, "metadata": {} }' > empty.ipynb
+jupyter notebook --MultiKernelManager.default_kernel_name=clang_repl empty.ipynb
+```
+
+## Installation (for development)
+```shell
+git clone https://github.com/pmanstet/clang_repl_kernel.git
 cd clang_repl
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -e . # editable install
-jupyter kernelspec list # should now also list "clang_repl   .venv/share/jupyter/kernels/clang_repl"
-jupyter notebook --kernel clang_repl demo.ipynb
+python -m pip install -e .
+jupyter kernelspec list 
+
+# interactive console
 jupyter console --kernel clang_repl
+
+# demo notebook
+jupyter notebook demo.ipynb
 ```
-
-## pypi publishing
-
-```shell
-# test release
-git clone https://gitlab.tuwien.ac.at/paul.manstetten/clang_repl_kernel.git
-cd clang_repl_kernel
-rm -rf .venv .testenv dist data_kernelspec
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade build twine
-# note: bump version number (overriding is not supported on upload to pypi)
-python -m build
-# note: next step needs api token
-python -m twine upload --repository testpypi --skip-existing dist/* 
-deactivate
-```
-
-```shell
-# test install of test release (no deps)
-rm -rf .venv .testenv dist data_kernelspec
-python -m venv .testenv
-source .testenv/bin/activate 
-python -m pip install --extra-index-url https://pypi.org/simple --index-url https://test.pypi.org/simple clang-repl
-jupyter kernelspec list # should list clang_repl
-jupyter console --kernel clang_repl # check if works (type: %status)
-deactivate
-```
-
-```shell
-# publish release
-git clone https://gitlab.tuwien.ac.at/paul.manstetten/clang_repl_kernel.git
-cd clang_repl_kernel
-rm -rf .venv .testenv dist data_kernelspec
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade build twine
-# note: bump version number (overriding is not supported on upload to pypi)
-python -m build
-# note: next step needs api token
-python -m twine upload --repository pypi --skip-existing dist/* 
-deactivate
-```
-
-
-### Related links:
-
-- https://hex.tech/blog/jupyter-kernel-overview/
-- https://jupyter-client.readthedocs.io/en/stable/wrapperkernels.html
-- https://github.com/llvm/llvm-project/commits?author=vgvassilev (`clang-repl` related development)
-
