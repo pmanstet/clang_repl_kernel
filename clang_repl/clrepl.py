@@ -16,8 +16,8 @@ class ClangRepl:
 
         # defaults
         self.clrepl = "clang-repl"
-        self.clrepl_args = []
-        self.clrepl_includes = []
+        self.clrepl_args = ["-std=c++20", "-ferror-limit=3", "-O1"]
+        self.clrepl_includes = ["vector", "iostream"]
         self.clrepl_libs = []
         self.timeout = 10
         self.debug = False
@@ -151,7 +151,7 @@ error:     {error}
             res.strip()
             if self.debug:
                 res = res + debug_str
-            return res.strip(), alive
+            return res.strip(), alive and not timed_out
 
         # comment first line of cell if magic command(s) are present
         if firstline.startswith(r"%"):
@@ -187,14 +187,18 @@ error:     {error}
         res = res.strip()
 
         # run %undo after successfull execution
-        if firstline.startswith(r"%undo") and alive and not error:
+        if firstline.startswith(r"%undo") and alive and not timeout and not error:
             undo_res, undo_alive, undo_timed_out, undo_error, undo_debug_str = self.raw_line(r"%undo")
 
             undo_res = self.re_undo_pattern.sub('', undo_res)
             res += undo_res.strip()
             alive = alive and undo_alive
+            timed_out = timed_out or undo_timed_out
             debug_str += undo_debug_str
 
         if self.debug:
             res = res + debug_str
-        return res.strip(), alive
+        
+        if timed_out:
+            res += f"clang-repl session was killed (due to timeout={self.timeout}s); you need to restart the kernel."
+        return res.strip(), alive and not timed_out
