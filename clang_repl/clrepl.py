@@ -4,9 +4,8 @@ import uuid
 import subprocess
 import re
 import tomllib
+import json
 from pathlib import Path
-
-__version__ = '1.0'
 
 class ClangRepl:
     """ Wrapper for clang-repl """
@@ -14,28 +13,33 @@ class ClangRepl:
     def __init__(self):
         """ Prepare kernel settings and spawn """
 
-        # defaults
-        self.clrepl = "clang-repl"
-        self.clrepl_args = ["-std=c++20", "-ferror-limit=3", "-O1"]
-        self.clrepl_includes = ["vector", "iostream"]
-        self.clrepl_libs = []
-        self.timeout = 10
-        self.debug = False
+        default_options = \
+            {'defaults': 
+                {
+                    'repl': 'clang-repl',
+                    'args': ['-std=c++23', '-ferror-limit=3', '-O1'],
+                    'includes': ['iostream'],
+                    'libs': [], 
+                    'timeout': 10,
+                    'debug': False
+                }
+            }
 
-        # parse config file
         cfg = Path.home() / ".clang-repl"
-        if cfg.is_file():
-            with open(cfg, "rb") as f:
-                config = tomllib.load(f)
-                self.clrepl = config["defaults"]["repl"]
-                self.clrepl_args.clear()
-                [self.clrepl_args.extend(("--Xcc", arg)) for arg in config["defaults"]["args"]]
-                self.clrepl_includes.clear()
-                [self.clrepl_includes.append(fr"#include <{header}>") for header in config["defaults"]["includes"]]
-                self.clrepl_libs.clear()
-                [self.clrepl_libs.append(fr"%lib {libname}") for libname in config["defaults"]["libs"]]                
-                self.timeout = config["defaults"]["timeout"]
-                self.debug = config["defaults"]["debug"]
+        if not cfg.is_file():
+            user_options = {}
+        else:
+            with open(cfg, "rb") as f: user_options = tomllib.load(f)
+
+        options = default_options | user_options
+
+        self.clrepl = options["defaults"]["repl"]
+        self.clrepl_args = []
+        [self.clrepl_args.extend(("--Xcc", arg)) for arg in options["defaults"]["args"]]
+        self.clrepl_includes = [fr"#include <{header}>" for header in options["defaults"]["includes"]]
+        self.clrepl_libs = [fr"%lib {libname}" for libname in options["defaults"]["libs"]]                
+        self.timeout = int(options["defaults"]["timeout"])
+        self.debug = bool(options["defaults"]["debug"])
 
         # clang-repl session constants
         self.prompt = r"clang-repl> "
@@ -60,9 +64,14 @@ class ClangRepl:
         self.child = None
         self.debug_defaults = []
         try:
+
+            self.debug_defaults.append(f"default options: {json.dumps(default_options, sort_keys=True, indent=2)}")
+            self.debug_defaults.append(f"user options: {json.dumps(user_options, sort_keys=True, indent=2)}")         
+            self.debug_defaults.append(f"effective options: {json.dumps(options, sort_keys=True, indent=2)}")                     
+
             version_dump = subprocess.run(
                 [self.clrepl, '--version'], check=True, capture_output=True, text=True).stdout
-            self.debug_defaults = [ f"clang-repl found: {self.clrepl} {version_dump}" ]
+            self.debug_defaults.append(str([ f"clang-repl found: {self.clrepl} {version_dump}" ]))
             # pexpect: spawn new session
             self.child = pexpect.spawn(
                 self.clrepl, self.clrepl_args, encoding='utf-8', echo=False, timeout=5)
