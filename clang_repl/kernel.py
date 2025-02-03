@@ -1,6 +1,7 @@
 from ipykernel.kernelbase import Kernel
 
-from .clrepl import ClangRepl, __version__
+from . import __version__
+from .clrepl import ClangRepl
 
 
 class ClangReplKernel(Kernel):
