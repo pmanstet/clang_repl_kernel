@@ -50,7 +50,7 @@ python -m pip install clang-repl
 jupyter notebook demo.ipynb
 
 # new empty notebook
-echo '{ "cells": [], "nbformat": 4, "metadata": {} }' > empty.ipynb
+echo '{ "cells": [], "nbformat": 4, "nbformat_minor": 4,  "metadata": {} }' > empty.ipynb
 jupyter notebook --MultiKernelManager.default_kernel_name=clang_repl empty.ipynb
 ```
 
@@ -64,7 +64,7 @@ python -m pip install -e .
 jupyter kernelspec list 
 
 # interactive console
-jupyter console --kernel clang_repl
+jupyter console --kernel clang_repl --debug
 
 # demo notebook
 jupyter notebook demo.ipynb
