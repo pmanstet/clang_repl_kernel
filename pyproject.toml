@@ -10,7 +10,7 @@ readme = "README.md"
 license = { text = "no license" }
 authors = [ { name = "Paul Manstetten", email = "paul.manstetten@tuwien.ac.at" }, ]
 
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 dependencies = [ "ipykernel", "pexpect", "notebook", "jupyter-console",]
 
 [project.urls]
