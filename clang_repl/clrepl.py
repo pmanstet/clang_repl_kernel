@@ -71,7 +71,7 @@ class ClangRepl:
 
             version_dump = subprocess.run(
                 [self.clrepl, '--version'], check=True, capture_output=True, text=True).stdout
-            self.debug_defaults.append(str([ f"clang-repl found: {self.clrepl} {version_dump}" ]))
+            self.debug_defaults.append(f"clang-repl found: {self.clrepl} {version_dump}")
             # pexpect: spawn new session
             self.child = pexpect.spawn(
                 self.clrepl, self.clrepl_args, encoding='utf-8', echo=False, timeout=5)
@@ -181,7 +181,7 @@ error:     {error}
                 """
 
         # regular cell
-        with tempfile.NamedTemporaryFile(delete=False, delete_on_close=False, mode="w", prefix="cell-", suffix=".repl") as source:
+        with tempfile.NamedTemporaryFile(delete=False, mode="w", prefix="cell-", suffix=".repl") as source:
             source.write(cell)
             source.close()
             include = source.name
