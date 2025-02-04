@@ -57,8 +57,11 @@ jupyter notebook --MultiKernelManager.default_kernel_name=clang_repl empty.ipynb
 ## Installation (for development)
 ```shell
 git clone https://github.com/pmanstet/clang_repl_kernel.git
-cd clang_repl
-python -m venv .venv
+cd clang_repl_kernel
+# optional: use a fixed python version 
+# pyenv install 3.11.10
+# ~/.pyenv/versions/3.11.10/bin/python -m venv .venv 
+python -m venv .venv 
 source .venv/bin/activate
 python -m pip install -e .
 jupyter kernelspec list 
