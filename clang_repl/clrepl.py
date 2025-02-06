@@ -125,7 +125,7 @@ class ClangRepl:
 {res}
 -- repl out end ----------------------
 alive:     {alive}
-timed_out: {timed_out}
+timed_out: {timed_out} ({timeout}s)
 error:     {error}
 --------------------------------------
 """
@@ -196,7 +196,7 @@ error:     {error}
         res = res.strip()
 
         # run %undo after successfull execution
-        if firstline.startswith(r"%undo") and alive and not timeout and not error:
+        if firstline.startswith(r"%undo") and alive and not timed_out and not error:
             undo_res, undo_alive, undo_timed_out, undo_error, undo_debug_str = self.raw_line(r"%undo")
 
             undo_res = self.re_undo_pattern.sub('', undo_res)
