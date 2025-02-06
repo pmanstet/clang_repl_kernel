@@ -7,7 +7,7 @@ name = "clang_repl"
 dynamic = ["version"]
 description = "IPython kernel forwarding C++ cells to clang-repl"
 readme = "README.md"
-license = { text = "no license" }
+license = { text = "CC0-1.0", file = "LICENSE", } 
 authors = [ { name = "Paul Manstetten", email = "paul.manstetten@tuwien.ac.at" }, ]
 
 requires-python = ">=3.11"
