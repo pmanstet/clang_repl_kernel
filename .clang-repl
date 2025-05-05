@@ -1,7 +1,10 @@
 [defaults]
-repl = "clang-repl"
-args = ["-std=c++23", "-ferror-limit=3", "-O1"]
-includes = ["vector", "iostream"]
-libs = ["libomp.so"]
+repl = "/usr/bin/clang-repl"
+args = ["-std=c++23", "-ferror-limit=3", "-O2"]
+includes = ["vector", "print",
+            "tbb/info.h", 
+            "tbb/parallel_for.h",
+            "tbb/task_arena.h"]
+libs = [ "libtbb.so"]
 timeout = 10
 debug = false
